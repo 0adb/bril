@@ -1,3 +1,34 @@
+Bril Redesign Attempt: Bril2
+====================
+
+This is a fork of [Bril](https://github.com/sampsyo/bril), made for me to try out redesigning Bril in consideration of the "swap problem" mentioned at [this issue](https://github.com/sampsyo/bril).
+
+I have no affiliation with the people that actually made Bril. See [this link](#original_docs) for the original README, or you can go to the original repo.
+
+Here are some docs for my specific changes to the repo:
+
+`bril2` and `bril2i.ts`
+----------
+My first implementation steps were to make an exact copy of `bril2i.ts`, `bril-ts`, and `bril-txt` so that I could independently make changes to my copies while not losing access to the original Bril interpreter. Hence, they're now all `bril2*`. 
+
+To get the `bril2i` command, run `deno install bril2i.ts` from the base directory.
+To get its dependency `bril22json`, `cd` into `bril2-txt` and run  `pip install --user flit` (after having installed `flit`).
+
+To use the `bril2i` command, one can for example run:
+```
+bril22json < test/interp/ssa/ssa-two-phi.bril | bril2i true
+```
+where `test/interp/ssa/ssa-two-phi.bril` is the Bril file, and `true` is the argument to the `main` function. Currently, I'm avoiding rewriting the parser and/or changing the syntax of a Bril program, just modifying the interpreter itself, so the current test cases should still fly using `bril2i.ts`.
+
+The general plan of attack is:
+- During function execution, there will be extra state (for now, called phi-state) maintained alongside the heap.
+- On entering a label, the set of instructions between it and the "next" label (in order of appearance in the function text, not execution) is scanned for all variables that are phi-read from (i.e. appear as choices at phi points).
+- phi-state will be cleared and filled with the current values of the phi-read from variables.
+- For assignments, if assigning from phi, phi-state will be first searched before searching the heap. 
+
+<a name="original_docs" ></a>
+
+
 Bril: A Compiler Intermediate Representation for Learning
 =========================================================
 

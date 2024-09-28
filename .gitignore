@@ -1,6 +1,7 @@
 build/
 book/
 venv/
+bin/
 node_modules/
 .hypothesis/
 .pytest_cache/
